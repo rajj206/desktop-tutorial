@@ -1,0 +1,50 @@
+# -*- coding: utf-8 -*-
+"""
+Spyder Editor
+
+This is a temporary script file.
+"""
+
+import pandas as pd
+import datetime
+
+def xnpv(rate, values, dates):
+ '''Replicates the XNPV() function'''
+ if rate <= -1.0:
+     return float('inf')
+ min_date = min(dates)
+ return sum([
+     value / (1 + rate)**((date - min_date).days / 365)
+     for value, date
+     in zip(values, dates)
+ ])
+
+
+from scipy.optimize import newton
+def xirr(values, dates):
+ '''Replicates the XIRR() function'''
+ return newton(lambda r: xnpv(r, values, dates), 0)
+
+        
+df = pd.read_excel('/Users/rajendrakalepu/Desktop/work_place/my_python/IRR.xlsx', sheet_name='irr')
+
+print (df)
+
+df2 = pd.melt(df, id_vars=['borrower'],    var_name='date', value_name='amount') 
+
+print (df2) 
+
+df2['date'] =  df2['date'].astype('datetime64[ns]') 
+
+#xirr_calc = xirr(df2.amount, df2.date)
+
+#df3  = df2.groupby(['borrower']).apply(lambda x : xirr(df2['amount'], df2['date']))
+
+df3  = df2.groupby(['borrower']).apply(lambda x : df2['amount'] df2['date'].xirr())
+
+print (df3)
+
+#print (xirr_calc)
+
+#print (type(df2['date'].iloc[0]))
+
